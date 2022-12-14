@@ -34,9 +34,13 @@ static int eliminate_col(Matrix* mat, Matrix* B, int chosen_col)
             main_elem_row = row;
         }
     }
-
     swap_rows(mat, B, chosen_row, main_elem_row);
 
+
+    if (mat->data[chosen_row][chosen_col] == 0)
+    {
+        return 1; // singular matrix
+    }
     double multiplier = 1.0 / mat->data[chosen_row][chosen_col];
     for (row = chosen_row + 1; row < mat->height; row++)
     {
@@ -61,7 +65,8 @@ int eliminate(Matrix* mat, Matrix* B)
     int col;
     for (col = 0; col <= mat->width - 2; col++)
     {
-        eliminate_col(mat, B, col);
+        if (eliminate_col(mat, B, col) == 1)
+            return 1;
     }
 
     return 0;
