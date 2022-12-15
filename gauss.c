@@ -3,6 +3,9 @@
 
 static void swap_rows(Matrix* mat, Matrix* B, int r1, int r2)
 {
+    if (r1 == r2)
+        return;
+
     int col;
     for (col = 0; col < mat->width; col++)
     {
@@ -18,39 +21,40 @@ static void swap_rows(Matrix* mat, Matrix* B, int r1, int r2)
 
 static int eliminate_col(Matrix* mat, Matrix* B, int chosen_col)
 {
+    int row, col;
+
     int chosen_row = chosen_col;
 
     // find main element
     int main_elem_row = chosen_row;
-    double max_data_abs = mat->data[chosen_row][chosen_col];
-
-    int row;
+    double max_abs = fabs(mat->data[chosen_row][chosen_col]);
     for (row = chosen_row + 1; row < mat->height; row++)
     {
-        double data_abs = fabs(mat->data[row][chosen_col]);
-        if (data_abs > max_data_abs)
+        double potential_max = fabs(mat->data[row][chosen_col]);
+        if (potential_max > max_abs)
         {
-            max_data_abs = data_abs;
+            max_abs = potential_max;
             main_elem_row = row;
         }
     }
+
     swap_rows(mat, B, chosen_row, main_elem_row);
 
-
-    if (mat->data[chosen_row][chosen_col] == 0)
+    if (mat->data[chosen_row][chosen_col] == 0) // cannot divide by 0
     {
-        return 1; // singular matrix
+        return 1;
     }
-    double multiplier = 1.0 / mat->data[chosen_row][chosen_col];
+
     for (row = chosen_row + 1; row < mat->height; row++)
     {
-        int col;
-        for (col = chosen_col; col < mat->width; col++)
+        double multiplier = mat->data[row][chosen_col] / mat->data[chosen_row][chosen_col];
+
+        for (col = 0; col < mat->width; col++)
         {
-            mat->data[row][col] -= multiplier * mat->data[row - 1][col]; // rounding !!!
+            mat->data[row][col] -= multiplier * mat->data[chosen_row][col];
         }
 
-        B->data[row][0] -= multiplier * B->data[row - 1][0];
+        B->data[row][0] -= multiplier * B->data[chosen_row][0];
     }
 
     return 0;
@@ -65,7 +69,8 @@ int eliminate(Matrix* mat, Matrix* B)
     int col;
     for (col = 0; col <= mat->width - 2; col++)
     {
-        if (eliminate_col(mat, B, col) == 1)
+        int fail = eliminate_col(mat, B, col);
+        if (fail)
             return 1;
     }
 

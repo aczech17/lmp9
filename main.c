@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define FREE_MAT freeMatrix(A); freeMatrix(B); freeMatrix(x);
 
 int main(int argc, char ** argv)
 {
@@ -17,14 +18,27 @@ int main(int argc, char ** argv)
 	Matrix* B = readFromFile(argv[2]);
 
 	if (A == NULL)
+    {
+        fprintf(stderr, "Nie udało się wczytać A.\n");
         return -1;
+    }
 	if (B == NULL)
+    {
+        fprintf(stderr, "Nie udało się wczytać B.\n");
+        freeMatrix(A);
         return -2;
+    }
 
-	printToScreen(A);
-	printToScreen(B);
+	//printToScreen(A);
+	//printToScreen(B);
 
 	int res = eliminate(A, B);
+    printf("\n\nMacierz A po eliminacji:\n");
+    printToScreen(A);
+
+    printf("Macierz B po eliminacji:\n");
+    printToScreen(B);
+
 	Matrix* x = createMatrix(B->height, 1);
     if(x == NULL)
     {
@@ -35,12 +49,29 @@ int main(int argc, char ** argv)
     }
 
     res = backsubst(x, A, B);
-    printToScreen(x);
+    switch (res)
+    {
+        case 1:
+        {
+            fprintf(stderr, "Błąd dzielenia przez 0.\n");
+            FREE_MAT
+            return 21;
+        }
+        case 2:
+        {
+            fprintf(stderr, "Nieprawidłowe wymiary macierzy.\n");
+            FREE_MAT
+            return 37;
+        }
+        case 0:
+        {
+            printf("\n\nMacierz x: \n");
+            printToScreen(x);
+        }
+        default:
+            break;
+    }
 
-
-    freeMatrix(x);
-	freeMatrix(A);
-	freeMatrix(B);
-
+    FREE_MAT
 	return 0;
 }
