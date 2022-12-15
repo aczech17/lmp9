@@ -1,41 +1,64 @@
 #include "backsubst.h"
-
+#include <stdio.h>
 /**
  * Zwraca 0 - wsteczne podstawienie zakonczone sukcesem
  * Zwraca 1 - błąd dzielenia przez 0 (element na diagonali = 0)
  * Zwraca 2 - błąd nieprawidłowych rozmiarów macierzy
  */
+
 int backsubst(Matrix* x, Matrix* mat, Matrix* b)
 {
-    // mat * x = b
-    int correct_dims = mat->width == mat->height &&
-            mat->width == x->height &&
-            mat->width == b->height &&
-            x->width == 1 &&
-            b->width == 1;
+    int i,j;
+    int current_row;
+    int current_column;
+    double sum;
+    int check;
 
-    if (!correct_dims)
+    check = check_if_good(mat, x, b);
+
+    if( check == 0 )
         return 2;
 
-    int row;
-    for (row = x->height - 1; row >= 0; row--)
+
+    current_row = mat->height - 1;
+    current_column = current_row + 1;
+
+
+    for( current_row = mat->height - 1; current_row >= 0; current_row-- )
     {
-        double val = b->data[row][0];
-        int col;
-        for (col = row + 1; col < mat->width; col++)
+        sum = 0;
+
+        if( mat->data[current_row][current_row] == 0 ) // Sprawdzamy czy na diagonali jest 0
+            return 1;
+        
+        for( current_column = current_row + 1; current_column < mat->width; current_column++ )
         {
-            val -= mat->data[row][col] * x->data[col][0];
+            sum += mat->data[current_row][current_column] * x->data[current_column][0];
+
         }
 
-        if (mat->data[row][row] == 0)
-            return 1;
-
-        val /= mat->data[row][row];
-
-        x->data[row][0] = val;
+        x->data[current_row][0] = ( b->data[current_row][0] - sum ) / mat->data[current_row][current_row];
     }
 
+
     return 0;
+
 }
 
+int check_if_good( Matrix *mat, Matrix *x, Matrix *b )
+{
+    if( mat->height != mat->width )
+        return 0;
+    if( mat->height != x->height )
+        return 0;
+    if( mat->height != b->height )
+        return 0;
+    if( mat->height != mat->width )
+        return 0;
+    if ( b->width != 1 )
+        return 0;
+    if( x->width != 1 )
+        return 0;
+    return 1;
+}
 
