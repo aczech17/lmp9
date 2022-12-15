@@ -1,6 +1,5 @@
 #include "backsubst.h"
 
-#include <stdio.h> // DEBUG
 
 /**
  * Zwraca 0 - wsteczne podstawienie zakonczone sukcesem
@@ -32,7 +31,6 @@ int backsubst(Matrix* x, Matrix* mat, Matrix* b)
         if (mat->data[row][row] == 0)
             return 1;
 
-        //printf("val = %g\n", val);
         val /= mat->data[row][row];
 
         x->data[row][0] = val;
