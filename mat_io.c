@@ -64,7 +64,7 @@ Matrix* createMatrix(int height, int width)
     mat->data = (double**) malloc(sizeof(double*) * height);
 
     int i;
-    for (i=0; i < height; i++)
+    for (i = 0; i < height; i++)
     {
         mat->data[i] = (double*) malloc(sizeof(double) * width);
     }
@@ -72,8 +72,11 @@ Matrix* createMatrix(int height, int width)
     return mat;
 }
 
-void freeMatrix(Matrix * mat)
+void freeMatrix(Matrix* mat)
 {
+    if (mat == NULL)
+        return;
+
     int i;
 	for (i = 0; i < mat->height; i++)
 		free(mat->data[i]);

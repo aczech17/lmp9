@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define FREE_MAT freeMatrix(A); freeMatrix(B); freeMatrix(x);
+#define FREE_MAT freeMatrix(A); freeMatrix(B); freeMatrix(X);
 
 int main(int argc, char ** argv)
 {
@@ -14,41 +14,57 @@ int main(int argc, char ** argv)
         return 1;
     }
 
-	Matrix* A = readFromFile(argv[1]);
-	Matrix* B = readFromFile(argv[2]);
+    Matrix* A = NULL;
+    Matrix* B = NULL;
+    Matrix* X = NULL;
+
+	A = readFromFile(argv[1]);
+	B = readFromFile(argv[2]);
 
 	if (A == NULL)
     {
         fprintf(stderr, "Nie udało się wczytać A.\n");
         return -1;
     }
+
 	if (B == NULL)
     {
         fprintf(stderr, "Nie udało się wczytać B.\n");
-        freeMatrix(A);
+        FREE_MAT
         return -2;
     }
 
-	//printToScreen(A);
-	//printToScreen(B);
+    printf("Macierz A:\n");
+	printToScreen(A);
+
+    printf("\nMacierz B:\n");
+	printToScreen(B);
 
 	int res = eliminate(A, B);
-    printf("\n\nMacierz A po eliminacji:\n");
-    printToScreen(A);
-
-    printf("Macierz B po eliminacji:\n");
-    printToScreen(B);
-
-	Matrix* x = createMatrix(B->height, 1);
-    if(x == NULL)
+    if (res == 1)
     {
-        fprintf(stderr,"Błąd! Nie mogłem utworzyć wektora wynikowego x.\n");
-        freeMatrix(A);
-        freeMatrix(B);
+        fprintf(stderr, "Nie udało się dokonać eliminacji Gaussa.\n");
+        FREE_MAT
         return 1;
     }
 
-    res = backsubst(x, A, B);
+
+    printf("\nMacierz A po eliminacji:\n");
+    printToScreen(A);
+
+    printf("\nMacierz B po eliminacji:\n");
+    printToScreen(B);
+
+
+	X = createMatrix(B->height, 1);
+    if(X == NULL)
+    {
+        fprintf(stderr,"Błąd! Nie mogłem utworzyć wektora wynikowego x.\n");
+        FREE_MAT
+        return 1;
+    }
+
+    res = backsubst(X, A, B);
     switch (res)
     {
         case 1:
@@ -65,8 +81,8 @@ int main(int argc, char ** argv)
         }
         case 0:
         {
-            printf("\n\nMacierz x: \n");
-            printToScreen(x);
+            printf("\nMacierz X: \n");
+            printToScreen(X);
         }
         default:
             break;
