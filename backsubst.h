@@ -9,5 +9,5 @@
  * Zwraca 2 - błąd nieprawidłowych rozmiarów macierzy
  */
 int backsubst(Matrix* x, Matrix* mat, Matrix* b);
-
+int check_if_good( Matrix *mat, Matrix *x, Matrix *b );
 #endif // BACKSUBST_H
