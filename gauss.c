@@ -66,6 +66,9 @@ static int eliminate_col(Matrix* mat, Matrix* B, int chosen_col)
  */
 int eliminate(Matrix* mat, Matrix* B)
 {
+    if (!(mat->width == mat->height && B->width == 1 && B->height == mat->height))
+        return 1;
+
     int col;
     for (col = 0; col <= mat->width - 2; col++)
     {
